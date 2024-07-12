@@ -1,4 +1,22 @@
-site_name: declo docs
-site_url: https://mydomain.org/mysite
+# Site information
+site_name: Declo 〰️
+site_author: Arun Patro
+site_url: https://arunpatro.github.io/declo
+site_description: >-
+  Structured text generation with LLMs
+
+# Repository
+repo_name: arunpatro/declo
+repo_url: https://github.com/arunpatro/declo
+
+# Copyright
+copyright: Copyright &copy; 2024- Arun Patro
+
+# Configuration
 theme:
   name: material
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Inter
+    code: Source Code Pro

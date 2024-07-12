@@ -1,17 +1,17 @@
-# Welcome to MkDocs
+# declo
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+A simple way to program declaratively in python.
 
-## Commands
+## Usage
+```python
+from declo.tools import d_lambda
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+add_one = d_lambda("x => x + 1")
+assert add_one(1) == 2 # True
+```
 
-## Project layout
+## Motivation
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+1. Many syntactic problems can be solved with a pre-processor
+2. Next step is to compile aka ast parsing
+3. Since types are not that big of a problem, we should concern ourselves with closure support.
