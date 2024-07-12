@@ -3,7 +3,7 @@ site_name: Declo 〰️
 site_author: Arun Patro
 site_url: https://arunpatro.github.io/declo
 site_description: >-
-  Structured text generation with LLMs
+  Declarative programming with Python
 
 # Repository
 repo_name: arunpatro/declo
