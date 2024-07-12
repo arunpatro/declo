@@ -4,13 +4,14 @@ site_author: Arun Patro
 site_url: https://arunpatro.github.io/declo
 site_description: >-
   Declarative programming with Python
+docs_dir: _docs
 
 # Repository
 repo_name: arunpatro/declo
 repo_url: https://github.com/arunpatro/declo
 
 # Copyright
-copyright: Copyright &copy; 2024- Arun Patro
+copyright: Copyright &copy; 2024 - Arun Patro
 
 # Configuration
 theme:
