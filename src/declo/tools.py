@@ -8,7 +8,6 @@ def func(code):
         raise ValueError("Invalid lambda expression format")
     
     param, body = parts
-    body = re.sub(r'([a-zA-Z_][a-zA-Z0-9_]*)', r'\1', body)
     lambda_str = f"lambda {param}: {body}"
     lambda_ast = ast.parse(lambda_str).body[0].value
     code_obj = compile(ast.Expression(lambda_ast), '<string>', 'eval')

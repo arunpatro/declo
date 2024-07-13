@@ -24,6 +24,13 @@ theme:
     # scheme: slate
     primary: 'black'
     accent: 'indigo'
+  features:
+    - content.code.copy
+    - navigation.expand
+    - navigation.tabs
+    - navigation.sections
+    - header.autohide
+    - announce.dismiss
 
 # Extensions
 markdown_extensions:
