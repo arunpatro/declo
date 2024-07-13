@@ -354,23 +354,25 @@
 <p>A simple way to program declaratively in python.</p>
 <h2 id="usage">Usage</h2>
 <ol>
-<li>Easily create lambdas</li>
+<li>
+<p>Create lambdas with arrow notation
+<div class="language-python highlight" style="background: #2E3440"><pre style="line-height: 125%;"><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span style="color: #81a1c1; font-weight: bold">from</span> <span style="color: #8fbcbb">declo.tools</span> <span style="color: #81a1c1; font-weight: bold">import</span> <span style="color: #d8dee9">d_lambda</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span style="color: #d8dee9">add_one</span> <span style="color: #81a1c1; font-weight: bold">=</span> <span style="color: #d8dee9">d_lambda</span><span style="color: #eceff4">(</span><span style="color: #a3be8c">&quot;x =&gt; x + 1&quot;</span><span style="color: #eceff4">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span style="color: #81a1c1; font-weight: bold">assert</span> <span style="color: #d8dee9">add_one</span><span style="color: #eceff4">(</span><span style="color: #b48ead">1</span><span style="color: #eceff4">)</span> <span style="color: #81a1c1; font-weight: bold">==</span> <span style="color: #b48ead">2</span> <span style="color: #616e87; font-style: italic"># True</span>
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Create named functions globally
+<div class="language-python highlight" style="background: #2E3440"><pre style="line-height: 125%;"><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span style="color: #81a1c1; font-weight: bold">from</span> <span style="color: #8fbcbb">declo.tools</span> <span style="color: #81a1c1; font-weight: bold">import</span> <span style="color: #d8dee9">run</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span style="color: #616e87; font-style: italic"># this creates a function foo in the global name space. </span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span style="color: #d8dee9">run</span><span style="color: #eceff4">(</span><span style="color: #a3be8c">&quot;let foo = x =&gt; x + 1&quot;</span><span style="color: #eceff4">)</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span style="color: #81a1c1; font-weight: bold">assert</span> <span style="color: #d8dee9">foo</span><span style="color: #eceff4">(</span><span style="color: #b48ead">5</span><span style="color: #eceff4">)</span> <span style="color: #81a1c1; font-weight: bold">==</span> <span style="color: #b48ead">6</span>
+</span></code></pre></div></p>
+</li>
 </ol>
-<pre><code class="language-python">from declo.tools import d_lambda
-
-add_one = d_lambda(&quot;x =&gt; x + 1&quot;)
-assert add_one(1) == 2 # True
-</code></pre>
-<ol>
-<li>Create named functions globally</li>
-</ol>
-<pre><code class="language-python">from declo.tools import run
-
-# this creates a function foo in the global name space. 
-run(&quot;let foo = x =&gt; x + 1&quot;)
-
-assert foo(5) == 6
-</code></pre>
 <h2 id="thoughts">Thoughts</h2>
 <ol>
 <li>Can we introduce synctatic sugar with pre-processing?</li>

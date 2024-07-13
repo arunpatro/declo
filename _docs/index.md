@@ -3,7 +3,7 @@
 A simple way to program declaratively in python.
 
 ## Usage
-1. Easily create lambdas
+1. Create lambdas with arrow notation
 ```python
 from declo.tools import d_lambda
 

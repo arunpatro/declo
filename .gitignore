@@ -11,3 +11,6 @@ wheels/
 dev/
 requirements-dev.lock
 requirements.lock
+
+# custom
+.vscode
