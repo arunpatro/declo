@@ -27,9 +27,9 @@ theme:
   features:
     - content.code.copy
     - navigation.expand
-    - navigation.tabs
+    # - navigation.tabs
     - navigation.sections
-    - header.autohide
+    # - header.autohide
     - announce.dismiss
 
 # Extensions
