@@ -1,9 +1,8 @@
 # Site information
-site_name: Declo 〰️
+site_name: Declo
 site_author: Arun Patro
 site_url: https://arunpatro.github.io/declo
-site_description: >-
-  Declarative programming with Python
+site_description: Declarative programming with Python
 docs_dir: _docs
 
 # Repository
