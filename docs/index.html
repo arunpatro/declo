@@ -272,9 +272,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#motivation" class="md-nav__link">
+  <a href="#thoughts" class="md-nav__link">
     <span class="md-ellipsis">
-      Motivation
+      Thoughts
     </span>
   </a>
   
@@ -324,9 +324,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#motivation" class="md-nav__link">
+  <a href="#thoughts" class="md-nav__link">
     <span class="md-ellipsis">
-      Motivation
+      Thoughts
     </span>
   </a>
   
@@ -353,16 +353,30 @@
 <h1 id="declo">declo</h1>
 <p>A simple way to program declaratively in python.</p>
 <h2 id="usage">Usage</h2>
+<ol>
+<li>Easily create lambdas</li>
+</ol>
 <pre><code class="language-python">from declo.tools import d_lambda
 
 add_one = d_lambda(&quot;x =&gt; x + 1&quot;)
 assert add_one(1) == 2 # True
 </code></pre>
-<h2 id="motivation">Motivation</h2>
 <ol>
-<li>Many syntactic problems can be solved with a pre-processor</li>
-<li>Next step is to compile aka ast parsing</li>
-<li>Since types are not that big of a problem, we should concern ourselves with closure support.</li>
+<li>Create named functions globally</li>
+</ol>
+<pre><code class="language-python">from declo.tools import run
+
+# this creates a function foo in the global name space. 
+run(&quot;let foo = x =&gt; x + 1&quot;)
+
+assert foo(5) == 6
+</code></pre>
+<h2 id="thoughts">Thoughts</h2>
+<ol>
+<li>Can we introduce synctatic sugar with pre-processing?</li>
+<li>Can we dynamically create native objects using <code>ast</code>, <code>compile()</code> or <code>types.FunctionDef</code>?</li>
+<li>What are the hard things - like closures?</li>
+<li>How do we handle linting?</li>
 </ol>
 
 
