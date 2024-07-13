@@ -1,2 +1,3 @@
-def hello() -> str:
-    return "Hello from declo!"
+from .tools import d_lambda, run
+
+__all__ = ['d_lambda', 'run']

@@ -1,22 +1,22 @@
 # declo
 
-A simple way to program declaratively in python.
+A simple way to program declaratively in python. Declo improves the functional programming syntax in python by creating native objects with ergonomic functional syntax inspired from JavaScript.
 
 ## Usage
 1. Create lambdas with arrow notation
 ```python
-from declo.tools import d_lambda
+import declo
 
-add_one = d_lambda("x => x + 1")
+add_one = declo.d_lambda("x => x + 1")
 assert add_one(1) == 2 # True
 ```
 
 2. Create named functions globally
 ```python
-from declo.tools import run
+import declo
 
 # this creates a function foo in the global name space. 
-run("let foo = x => x + 1")
+declo.run("let foo = x => x + 1")
 
 assert foo(5) == 6
 ```
