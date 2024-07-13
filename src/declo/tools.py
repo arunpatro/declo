@@ -1,7 +1,7 @@
 import ast
 import re
 
-def d_lambda(code):
+def func(code):
     parts = code.replace(" ", "").split("=>")
     
     if len(parts) != 2:

@@ -7,7 +7,7 @@
 ```python
 import declo
 
-add_one = declo.d_lambda("x => x + 1")
+add_one = declo.func("x => x + 1")
 assert add_one(1) == 2 # True
 ```
 

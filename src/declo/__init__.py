@@ -1,3 +1,3 @@
-from .tools import d_lambda, run
+from .tools import func, run
 
-__all__ = ['d_lambda', 'run']
+__all__ = ['func', 'run']
