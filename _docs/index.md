@@ -1,6 +1,6 @@
 # declo
 
-A simple way to program declaratively in python. Declo improves the functional programming syntax in python by creating native objects with ergonomic functional syntax inspired from JavaScript.
+`declo` aims to improve the ergonomics of functional programming syntax in python. It extends the JS syntax into python.
 
 ## Usage
 1. Create lambdas with arrow notation
