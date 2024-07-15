@@ -1,7 +1,7 @@
 import ast
 import re
 
-def func(code):
+def arrow_func(code):
     parts = code.replace(" ", "").split("=>")
     
     if len(parts) != 2:

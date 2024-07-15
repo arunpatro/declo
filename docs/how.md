@@ -2,7 +2,7 @@
 title: How does Declo work?
 ---
 
-The goal of declo is to manipulate Python objects with JavaScript syntax. We can do using three strategies:
+The goal of declo is to manipulate Python objects with JavaScript syntax. We can do using three strategies, each of them have their own trade-offs:
 
 ## 1. Source to Source
 Convert `js src => py src`. This can be kinda hard because of regex parsing etc, it will involve creating a custom grammar parser. This can be good at the start, but can quickly get complex, as and when we add more features. A simple way is:

@@ -2,7 +2,7 @@
 import ast
 import json
 
-def node_to_dict(node: ast.AST | list | any):
+def node_to_dict(node):
     """Recursively convert an AST node to a dictionary."""
     if isinstance(node, ast.AST):
         fields = {name: node_to_dict(value) for name, value in ast.iter_fields(node)}
