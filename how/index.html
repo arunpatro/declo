@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://arunpatro.github.io/declo/how/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../features/">
       
       
       
@@ -244,6 +244,46 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -394,7 +434,7 @@
 
   <h1>How does Declo work?</h1>
 
-<p>The goal of declo is to manipulate Python objects with JavaScript syntax. We can do using three strategies:</p>
+<p>The goal of declo is to manipulate Python objects with JavaScript syntax. We can do using three strategies, each of them have their own trade-offs:</p>
 <h2 id="1-source-to-source">1. Source to Source</h2>
 <p>Convert <code>js src =&gt; py src</code>. This can be kinda hard because of regex parsing etc, it will involve creating a custom grammar parser. This can be good at the start, but can quickly get complex, as and when we add more features. A simple way is:
 <div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">arrow_func</span>(js_code <span style="color: #666666">=</span> <span style="color: #BA2121">&quot;x =&gt; x + 1&quot;</span>):
