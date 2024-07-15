@@ -39,8 +39,6 @@ Declo is about DSLs that compile to python bytecode during runti
 TODO: I don't really understand `macro-py`.
 
 
-
-
 ## Thoughts
 
 1. Can we introduce synctatic sugar with pre-processing?
