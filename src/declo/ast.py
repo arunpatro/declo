@@ -1,45 +1,60 @@
-from typing import List, Optional, Union
+from typing import Union
 from pydantic import BaseModel, Field
 import ast
+import esprima
 
 # Define Pydantic models for JavaScript AST nodes
 class Identifier(BaseModel):
     type: str
-    name: str
+    name: str | None = None
 
 class Literal(BaseModel):
     type: str
-    value: Union[int, float, str, bool, None]
-    raw: str
+    value: int | float | str | bool | None = None
+    raw: str | None = None
 
 class BinaryExpression(BaseModel):
     type: str
-    left: Union["Identifier", "Literal"]
-    operator: str
-    right: Union["Identifier", "Literal"]
+    left: "Identifier" | "Literal" | None = None
+    operator: str | None = None
+    right: "Identifier" | "Literal" | None = None
+
+    class Config:
+        arbitrary_types_allowed = True
+        fields = {
+            'left': {'discriminator': 'type'},
+            'right': {'discriminator': 'type'},
+        }
 
 class ArrowFunctionExpression(BaseModel):
     type: str
-    id: Optional[None]
-    expression: bool
-    generator: bool
-    async_: bool = Field(..., alias='async')
-    params: List[Identifier]
-    body: BinaryExpression
+    id: None = None
+    expression: bool | None = None
+    generator: bool | None = None
+    async_: bool | None = Field(None, alias='async')
+    params: list[Identifier] | None = None
+    body: BinaryExpression | None = None
+
+    class Config:
+        arbitrary_types_allowed = True
 
 class ExpressionStatement(BaseModel):
     type: str
-    expression: ArrowFunctionExpression
+    expression: ArrowFunctionExpression | None = None
 
 class Program(BaseModel):
     type: str
-    body: List[Union[ExpressionStatement, ArrowFunctionExpression, BinaryExpression, Identifier, Literal]]
-    sourceType: str
+    body: list[ExpressionStatement | ArrowFunctionExpression | BinaryExpression | Identifier | Literal] | None = None
+    sourceType: str | None = None
 
 Program.model_rebuild()
 
+def parse_js(js_code) -> Program:
+    js_ast_dict = esprima.parseScript(js_code).toDict()
+    return Program(**js_ast_dict)
 
-def ast_js2py(js_node: Union[Program, ExpressionStatement, ArrowFunctionExpression, BinaryExpression, Identifier, Literal]) -> ast.AST:
+
+def ast_js2py(js_node: Program | ExpressionStatement | ArrowFunctionExpression | BinaryExpression | Identifier | Literal) -> ast.AST:
     if isinstance(js_node, Program):
         return ast.Module(body=[ast_js2py(stmt) for stmt in js_node.body], type_ignores=[])
     elif isinstance(js_node, ExpressionStatement):
@@ -67,6 +82,3 @@ def ast_js2py(js_node: Union[Program, ExpressionStatement, ArrowFunctionExpressi
     else:
         raise ValueError(f"Unsupported JS AST node type: {js_node.__class__.__name__}")
 
-
-def parse_js_ast_dict(js_ast_dict):
-    return Program(**js_ast_dict)
