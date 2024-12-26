@@ -4,7 +4,7 @@ import sys
 import os
 import fire
 
-from declopy.compiler import compile_declo_to_python
+from declo.compiler import compile_declo_to_python
 
 def _check_declo_file_extension(filepath: str):
     """

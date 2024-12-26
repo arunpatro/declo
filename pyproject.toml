@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "declopy"
+name = "declo"
 version = "0.1.0"
 description = ""
 authors = ["Arun Patro <arun.kumar.patro@gmail.com>"]
