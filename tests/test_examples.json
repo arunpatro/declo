@@ -1,0 +1,54 @@
+{
+    "examples": [
+        {
+            "title": "Basic Map Operation - Squares",
+            "declo": "nums = [1, 2, 3, 4, 5]\nsquares = nums.map(x => x * x)",
+            "python": "nums = [1, 2, 3, 4, 5]\nsquares = [x * x for x in nums]"
+        },
+        {
+            "title": "Basic Filter Operation - Even Numbers",
+            "declo": "nums = [1, 2, 3, 4, 5]\nevens = nums.filter(x => x % 2 == 0)",
+            "python": "nums = [1, 2, 3, 4, 5]\nevens = [x for x in nums if x % 2 == 0]"
+        },
+        {
+            "title": "Chained Operations - Even Squares",
+            "declo": "nums = [1, 2, 3, 4, 5]\neven_squares = nums.filter(x => x % 2 == 0).map(x => x * x)",
+            "python": "nums = [1, 2, 3, 4, 5]\neven_squares = [x * x for x in nums if x % 2 == 0]"
+        },
+        {
+            "title": "String Transformation - Uppercase",
+            "declo": "words = ['hello', 'world']\nupper = words.map(x => x.upper())",
+            "python": "words = ['hello', 'world']\nupper = [x.upper() for x in words]"
+        },
+        {
+            "title": "String Filter - Long Words",
+            "declo": "words = ['cat', 'elephant', 'dog']\nlong_words = words.filter(x => len(x) > 3)",
+            "python": "words = ['cat', 'elephant', 'dog']\nlong_words = [x for x in words if len(x) > 3]"
+        },
+        {
+            "title": "Dictionary Operations - Extract Values",
+            "declo": "people = [{'name': 'Alice', 'age': 25}, {'name': 'Bob', 'age': 30}]\nnames = people.map(p => p['name'])",
+            "python": "people = [{'name': 'Alice', 'age': 25}, {'name': 'Bob', 'age': 30}]\nnames = [p['name'] for p in people]"
+        },
+        {
+            "title": "Dictionary Filter - Adults",
+            "declo": "people = [{'name': 'Alice', 'age': 25}, {'name': 'Bob', 'age': 30}]\nadults = people.filter(p => p['age'] >= 30)",
+            "python": "people = [{'name': 'Alice', 'age': 25}, {'name': 'Bob', 'age': 30}]\nadults = [p for p in people if p['age'] >= 30]"
+        },
+        {
+            "title": "Complex Chain - Filter and Map",
+            "declo": "nums = [1, 2, 3, 4, 5]\nresult = nums.filter(x => x > 2).map(x => x * x).filter(x => x < 20)",
+            "python": "nums = [1, 2, 3, 4, 5]\nresult = [x * x for x in nums if x > 2 if (x * x) < 20]"
+        },
+        {
+            "title": "Negative Numbers",
+            "declo": "nums = [1, 2, 3, 4, 5]\nnegatives = nums.map(x => -x)",
+            "python": "nums = [1, 2, 3, 4, 5]\nnegatives = [-x for x in nums]"
+        },
+        {
+            "title": "Double Values",
+            "declo": "nums = [1, 2, 3, 4, 5]\ndoubles = nums.map(x => x * 2)",
+            "python": "nums = [1, 2, 3, 4, 5]\ndoubles = [x * 2 for x in nums]"
+        }
+    ]
+} 

@@ -17,12 +17,12 @@ I wanted to bring the excellent ergonomics of map, filter, chaining of functiona
 ```python
 # File: list_comp.declo
 nums = [1, 2, 3, 4, 5]
-squares = nums.map(lambda x: x * x)
-evens = nums.filter(lambda x: x % 2 == 0)
+squares = nums.map(x => x * x)
+evens = nums.filter(x => x % 2 == 0)
 ```
 
 ```bash
-declo compile list_comp.declo -o list_comp.py
+declo compile list_comp.declo
 ```
 
 ```python
@@ -35,7 +35,7 @@ evens = [x for x in nums if x % 2 == 0]
 ### 2. Decompile 
 
 ```bash
-declo decompile list_comp.py -o list_comp.declo
+declo decompile list_comp.py
 ```
 
 ### 3. Run

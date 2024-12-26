@@ -8,11 +8,15 @@ dependencies = [
     "astor>=0.8.1",
     "fire>=0.7.0",
     "rich>=13.7.0",
+    "typer>=0.15.1",
 ]
 
+[tool.setuptools]
+packages = ["declo", "tests"]
 
 [project.scripts]
 declo = "declo.cli:main"
+declodev = "tests.cli:app"
 
 [dependency-groups]
 dev = [
