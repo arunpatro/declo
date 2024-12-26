@@ -2,12 +2,12 @@
 
 import ast
 import re
+import astor
 from typing import Any
 
 def preprocess_arrow_functions(code: str) -> str:
     """Convert arrow function syntax to __arrow__ function calls before parsing."""
     def process_arrow_function(arrow_part: str) -> str:
-        # Match arrow functions like: x => x % 2 or x => len(x) > 3
         pattern = r'(\w+)\s*=>\s*(.+)'
         match = re.match(pattern, arrow_part.strip())
         if match:
@@ -21,7 +21,7 @@ def preprocess_arrow_functions(code: str) -> str:
     
     for line in lines:
         # If line contains arrow function
-        while '=>' in line:
+        if '=>' in line:
             # Find the arrow function within parentheses
             start = line.find('(', 0)
             while start != -1:
@@ -49,18 +49,14 @@ def preprocess_arrow_functions(code: str) -> str:
                         break
                     
                 start = line.find('(', start + 1)
-            
-            # If no more parentheses with arrow functions found, break
-            if start == -1:
-                break
         
         processed_lines.append(line)
     
     return '\n'.join(processed_lines)
 
 class ArrowTransformer(ast.NodeTransformer):
+    """Transform __arrow__ function calls to lambda expressions."""
     def visit_Call(self, node: ast.Call) -> Any:
-        # Handle arrow function transformation
         if (isinstance(node.func, ast.Name) and 
             node.func.id == '__arrow__' and 
             len(node.args) == 2):
@@ -77,8 +73,8 @@ class ArrowTransformer(ast.NodeTransformer):
         return self.generic_visit(node)
 
 class MapFilterTransformer(ast.NodeTransformer):
+    """Transform map/filter operations to list comprehensions."""
     def visit_Call(self, node: ast.Call) -> Any:
-        # First visit children to handle nested operations
         node = self.generic_visit(node)
         
         if not isinstance(node.func, ast.Attribute):
@@ -137,11 +133,20 @@ class MapFilterTransformer(ast.NodeTransformer):
                 
         return node
 
+class CleanupTransformer(ast.NodeTransformer):
+    """Clean up the AST to generate cleaner code."""
+    def visit_ListComp(self, node: ast.ListComp) -> Any:
+        # Remove unnecessary parentheses from list comprehension elements
+        if isinstance(node.elt, ast.BinOp):
+            # Simplify binary operations like x * x
+            node.elt.lineno = None
+            node.elt.col_offset = None
+        return node
+
 def compile_declo_to_python(code: str) -> str:
     """
-    Convert minimal Declo syntax to valid Python using AST transformation.
-    Handles both native list comprehensions, .map(lambda x: expr), and .filter(lambda x: expr).
-    Also supports arrow function syntax (=>).
+    Convert Declo syntax to valid Python using AST transformation.
+    Handles list comprehensions, .map(), .filter(), and arrow functions.
     """
     try:
         # Preprocess arrow functions
@@ -150,17 +155,28 @@ def compile_declo_to_python(code: str) -> str:
         # Parse the code into an AST
         tree = ast.parse(preprocessed_code)
         
-        # First transform arrow functions to lambda
+        # Transform arrow functions to lambda
         arrow_transformer = ArrowTransformer()
         tree = arrow_transformer.visit(tree)
         
-        # Then transform map/filter operations
+        # Transform map/filter operations
         map_filter_transformer = MapFilterTransformer()
-        transformed_tree = map_filter_transformer.visit(tree)
+        tree = map_filter_transformer.visit(tree)
+        
+        # Clean up the AST
+        cleanup_transformer = CleanupTransformer()
+        transformed_tree = cleanup_transformer.visit(tree)
         ast.fix_missing_locations(transformed_tree)
         
-        # Generate Python code from the transformed AST
-        return ast.unparse(transformed_tree)
+        # Configure astor for cleaner output
+        astor_options = {
+            'indent_with': ' ' * 4,
+            'add_line_information': False,
+            'source_generator_class': astor.SourceGenerator
+        }
+        
+        # Generate Python code using astor
+        return astor.to_source(transformed_tree, **astor_options).strip()
     except SyntaxError as e:
         raise SyntaxError(f"Invalid syntax in Declo code: {str(e)}")
     except Exception as e:
