@@ -47,13 +47,29 @@ class FilterMapTransformer(BaseTransformer):
             
             # Create arrow functions for both filter and map
             map_arrow = self.create_arrow_function(comp.target, node.elt)
-            filter_arrow = self.create_arrow_function(
-                comp.target,
-                comp.ifs[0] if len(comp.ifs) == 1 else ast.BoolOp(
+            
+            # Handle function calls in filter conditions
+            if len(comp.ifs) == 1:
+                filter_condition = comp.ifs[0]
+                # If it's a comparison involving a function call
+                if (isinstance(filter_condition, ast.Compare) and 
+                    isinstance(filter_condition.left, ast.Call)):
+                    # Ensure the function call is correctly represented
+                    filter_condition = ast.Compare(
+                        left=filter_condition.left,
+                        ops=filter_condition.ops,
+                        comparators=filter_condition.comparators
+                    )
+                else:
+                    # Directly use the condition if it's not a comparison
+                    filter_condition = filter_condition
+            else:
+                filter_condition = ast.BoolOp(
                     op=ast.And(),
                     values=comp.ifs
                 )
-            )
+            
+            filter_arrow = self.create_arrow_function(comp.target, filter_condition)
             
             # Create a filter().map() chain
             return ast.Call(

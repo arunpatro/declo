@@ -6,33 +6,54 @@ from typing import Any
 
 def preprocess_arrow_functions(code: str) -> str:
     """Convert arrow function syntax to __arrow__ function calls before parsing."""
-    # Match arrow functions like: x => x % 2 or x => x.upper()
-    pattern = r'(\w+)\s*=>\s*([^.]+(?:\.[^.]+)*)'
+    def process_arrow_function(arrow_part: str) -> str:
+        # Match arrow functions like: x => x % 2 or x => len(x) > 3
+        pattern = r'(\w+)\s*=>\s*(.+)'
+        match = re.match(pattern, arrow_part.strip())
+        if match:
+            arg, body = match.groups()
+            return f'__arrow__("{arg}", {body})'
+        return arrow_part
     
-    def replace_arrow(match):
-        arg, body = match.groups()
-        return f'__arrow__("{arg}", {body})'
-    
-    # Process line by line to handle chained operations
+    # Process line by line
     lines = code.split('\n')
     processed_lines = []
     
     for line in lines:
-        # If line contains chained operations, process each arrow function
-        if '=>' in line and ('map' in line or 'filter' in line):
-            parts = line.split('.')
-            current = []
-            for part in parts:
-                if '=>' in part:
-                    # Find the method name (map/filter) and combine with previous parts
-                    method = part.split('(')[0].strip()
-                    if method in ['map', 'filter']:
-                        if current:
-                            part = '.'.join(current) + '.' + part
-                            current = []
-                    part = re.sub(pattern, replace_arrow, part)
-                current.append(part)
-            line = '.'.join(current)
+        # If line contains arrow function
+        while '=>' in line:
+            # Find the arrow function within parentheses
+            start = line.find('(', 0)
+            while start != -1:
+                # Find matching closing parenthesis
+                depth = 1
+                pos = start + 1
+                while depth > 0 and pos < len(line):
+                    if line[pos] == '(':
+                        depth += 1
+                    elif line[pos] == ')':
+                        depth -= 1
+                    pos += 1
+                
+                if depth == 0:
+                    end = pos - 1
+                    # Process only the arrow function part
+                    before = line[:start + 1]
+                    arrow_part = line[start + 1:end]
+                    after = line[end:]
+                    
+                    # Replace arrow function if present
+                    if '=>' in arrow_part:
+                        arrow_part = process_arrow_function(arrow_part)
+                        line = before + arrow_part + after
+                        break
+                    
+                start = line.find('(', start + 1)
+            
+            # If no more parentheses with arrow functions found, break
+            if start == -1:
+                break
+        
         processed_lines.append(line)
     
     return '\n'.join(processed_lines)
@@ -85,41 +106,18 @@ class MapFilterTransformer(ast.NodeTransformer):
                         ]
                     )
                 
-                # Handle method calls in the lambda body
-                if isinstance(lambda_node.body, ast.Call) and isinstance(lambda_node.body.func, ast.Attribute):
-                    # This is a method call like x.upper()
-                    return ast.ListComp(
-                        elt=ast.Call(
-                            func=ast.Attribute(
-                                value=ast.Name(id=lambda_node.args.args[0].arg, ctx=ast.Load()),
-                                attr=lambda_node.body.func.attr,
-                                ctx=ast.Load()
-                            ),
-                            args=lambda_node.body.args,
-                            keywords=lambda_node.body.keywords
-                        ),
-                        generators=[
-                            ast.comprehension(
-                                target=lambda_node.args.args[0],
-                                iter=node.func.value,
-                                ifs=[],
-                                is_async=0
-                            )
-                        ]
-                    )
-                else:
-                    # Regular map operation
-                    return ast.ListComp(
-                        elt=lambda_node.body,
-                        generators=[
-                            ast.comprehension(
-                                target=lambda_node.args.args[0],
-                                iter=node.func.value,
-                                ifs=[],
-                                is_async=0
-                            )
-                        ]
-                    )
+                # Regular map operation
+                return ast.ListComp(
+                    elt=lambda_node.body,
+                    generators=[
+                        ast.comprehension(
+                            target=lambda_node.args.args[0],
+                            iter=node.func.value,
+                            ifs=[],
+                            is_async=0
+                        )
+                    ]
+                )
                 
         # Transform filter operation
         elif node.func.attr == 'filter' and len(node.args) == 1:
