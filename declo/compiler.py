@@ -6,14 +6,36 @@ from typing import Any
 
 def preprocess_arrow_functions(code: str) -> str:
     """Convert arrow function syntax to __arrow__ function calls before parsing."""
-    # Match arrow functions like: x => x % 2
-    pattern = r'(\w+)\s*=>\s*(.+)'
+    # Match arrow functions like: x => x % 2 or x => x.upper()
+    pattern = r'(\w+)\s*=>\s*([^.]+(?:\.[^.]+)*)'
     
     def replace_arrow(match):
         arg, body = match.groups()
         return f'__arrow__("{arg}", {body})'
     
-    return re.sub(pattern, replace_arrow, code)
+    # Process line by line to handle chained operations
+    lines = code.split('\n')
+    processed_lines = []
+    
+    for line in lines:
+        # If line contains chained operations, process each arrow function
+        if '=>' in line and ('map' in line or 'filter' in line):
+            parts = line.split('.')
+            current = []
+            for part in parts:
+                if '=>' in part:
+                    # Find the method name (map/filter) and combine with previous parts
+                    method = part.split('(')[0].strip()
+                    if method in ['map', 'filter']:
+                        if current:
+                            part = '.'.join(current) + '.' + part
+                            current = []
+                    part = re.sub(pattern, replace_arrow, part)
+                current.append(part)
+            line = '.'.join(current)
+        processed_lines.append(line)
+    
+    return '\n'.join(processed_lines)
 
 class ArrowTransformer(ast.NodeTransformer):
     def visit_Call(self, node: ast.Call) -> Any:
@@ -35,24 +57,69 @@ class ArrowTransformer(ast.NodeTransformer):
 
 class MapFilterTransformer(ast.NodeTransformer):
     def visit_Call(self, node: ast.Call) -> Any:
-        if not isinstance(node.func, ast.Attribute) or not isinstance(node.func.value, (ast.Name, ast.List, ast.ListComp)):
-            return self.generic_visit(node)
+        # First visit children to handle nested operations
+        node = self.generic_visit(node)
+        
+        if not isinstance(node.func, ast.Attribute):
+            return node
             
         # Transform map operation
         if node.func.attr == 'map' and len(node.args) == 1:
             if isinstance(node.args[0], ast.Lambda):
                 lambda_node = node.args[0]
-                return ast.ListComp(
-                    elt=lambda_node.body,
-                    generators=[
-                        ast.comprehension(
-                            target=lambda_node.args.args[0],
-                            iter=node.func.value,
-                            ifs=[],
-                            is_async=0
-                        )
-                    ]
-                )
+                
+                # Check if this is a chained operation (map after filter)
+                if (isinstance(node.func.value, ast.ListComp) and 
+                    len(node.func.value.generators) == 1 and 
+                    node.func.value.generators[0].ifs):
+                    # This is a filter().map() chain, combine them
+                    return ast.ListComp(
+                        elt=lambda_node.body,
+                        generators=[
+                            ast.comprehension(
+                                target=lambda_node.args.args[0],
+                                iter=node.func.value.generators[0].iter,
+                                ifs=node.func.value.generators[0].ifs,
+                                is_async=0
+                            )
+                        ]
+                    )
+                
+                # Handle method calls in the lambda body
+                if isinstance(lambda_node.body, ast.Call) and isinstance(lambda_node.body.func, ast.Attribute):
+                    # This is a method call like x.upper()
+                    return ast.ListComp(
+                        elt=ast.Call(
+                            func=ast.Attribute(
+                                value=ast.Name(id=lambda_node.args.args[0].arg, ctx=ast.Load()),
+                                attr=lambda_node.body.func.attr,
+                                ctx=ast.Load()
+                            ),
+                            args=lambda_node.body.args,
+                            keywords=lambda_node.body.keywords
+                        ),
+                        generators=[
+                            ast.comprehension(
+                                target=lambda_node.args.args[0],
+                                iter=node.func.value,
+                                ifs=[],
+                                is_async=0
+                            )
+                        ]
+                    )
+                else:
+                    # Regular map operation
+                    return ast.ListComp(
+                        elt=lambda_node.body,
+                        generators=[
+                            ast.comprehension(
+                                target=lambda_node.args.args[0],
+                                iter=node.func.value,
+                                ifs=[],
+                                is_async=0
+                            )
+                        ]
+                    )
                 
         # Transform filter operation
         elif node.func.attr == 'filter' and len(node.args) == 1:
@@ -70,7 +137,7 @@ class MapFilterTransformer(ast.NodeTransformer):
                     ]
                 )
                 
-        return self.generic_visit(node)
+        return node
 
 def compile_declo_to_python(code: str) -> str:
     """

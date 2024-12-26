@@ -138,6 +138,9 @@ def compile_python_to_declo(code: str) -> str:
         
         # Replace the __arrow__ function calls with arrow function syntax
         import re
+        # First replace any remaining lambda functions with arrow syntax
+        code = re.sub(r'lambda\s+(\w+)\s*:\s*([^,\n]+)', r'\1 => \2', code)
+        # Then replace __arrow__ calls
         code = re.sub(r'__arrow__\([\'"](\w+)[\'"]\s*,\s*(.+?)\)', r'\1 => \2', code)
         return code
     except SyntaxError as e:

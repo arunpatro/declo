@@ -138,12 +138,26 @@ def test_example(example: dict, track_failures: bool = False) -> dict:
         # Compilation test
         try:
             compiled = compile_declo_to_python(example["declo"])
-            console.print("[green]✓[/green] Compilation successful")
-            display_code(compiled, "[green]Compiled Python[/green]")
+            # Normalize whitespace for comparison
+            compiled = '\n'.join(line.strip() for line in compiled.splitlines())
+            expected_python = '\n'.join(line.strip() for line in example["python"].splitlines())
+            
+            if compiled == expected_python:
+                console.print("[green]✓[/green] Compilation successful - output matches expected Python")
+                display_code(compiled, "[green]Compiled Python[/green]")
+            else:
+                if track_failures:
+                    result["compilation_failed"] = True
+                console.print("[red]✗[/red] Compilation produced incorrect output")
+                display_code(compiled, "[red]Compiled Python (Incorrect)[/red]")
+                console.print("\n[yellow]Expected Python:[/yellow]")
+                display_code(expected_python, "[yellow]Expected Output[/yellow]")
+                return result if track_failures else None
+            
         except Exception as e:
             if track_failures:
                 result["compilation_failed"] = True
-            console.print("[red]✗[/red] Compilation failed")
+            console.print("[red]✗[/red] Compilation failed with error")
             console.print("[red]Error:[/red]", str(e))
             console.print("[dim]" + "\n".join(traceback.format_exc().split("\n")[1:]) + "[/dim]")
             return result if track_failures else None
