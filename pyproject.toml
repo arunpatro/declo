@@ -1,18 +1,19 @@
-[tool.poetry]
+[project]
 name = "declo"
 version = "0.1.0"
-description = ""
-authors = ["Arun Patro <arun.kumar.patro@gmail.com>"]
+description = "Declo is a python with javascript like functional syntax."
 readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "astor>=0.8.1",
+    "fire>=0.7.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-pydantic = "^2.10.4"
-fire = "^0.7.0"
 
-[tool.poetry.scripts]
-declopy = "declopy.cli:main"
+[project.scripts]
+declo = "declo.cli:main"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+]
