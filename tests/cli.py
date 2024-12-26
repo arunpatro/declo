@@ -84,13 +84,53 @@ def test(example_id: int = typer.Argument(None, help="ID of the example to test"
             console.print(f"[red]Invalid example ID. Please enter a number between 1 and {len(examples)}[/red]")
         return
     
+    # Track failures for each test type
+    failures = {
+        "compilation": [],
+        "decompilation": [],
+        "roundtrip": []
+    }
+    
     for i, example in enumerate(examples, 1):
-        console.print(f"[bold cyan]Example {i}:[/bold cyan]")
+        console.print(f"\n[bold cyan]Example {i}:[/bold cyan]")
         display_example(example)
-        test_example(example)
+        result = test_example(example, track_failures=True)
+        
+        if result.get("compilation_failed"):
+            failures["compilation"].append(i)
+        if result.get("decompilation_failed"):
+            failures["decompilation"].append(i)
+        if result.get("roundtrip_failed"):
+            failures["roundtrip"].append(i)
+    
+    # Display failure statistics
+    console.print("\n[bold]Test Summary:[/bold]")
+    table = Table(title="Failure Statistics")
+    table.add_column("Test Type", style="cyan")
+    table.add_column("Failed Examples", style="red")
+    table.add_column("Success Rate", style="yellow")
+    
+    for test_type, failed_indices in failures.items():
+        failed_count = len(failed_indices)
+        success_rate = f"{((len(examples) - failed_count) / len(examples)) * 100:.1f}%"
+        failed_str = f"{failed_count} ({', '.join(map(str, failed_indices))})" if failed_count else "None"
+        table.add_row(
+            test_type.title(),
+            failed_str,
+            success_rate
+        )
+    
+    console.print(table)
 
-def test_example(example: dict) -> None:
+def test_example(example: dict, track_failures: bool = False) -> dict:
     """Test a single example's compilation and decompilation."""
+    if track_failures:
+        result = {
+            "compilation_failed": False,
+            "decompilation_failed": False,
+            "roundtrip_failed": False
+        }
+    
     try:
         # Test compilation (Declo -> Python)
         console.print("\n[bold]Testing Steps:[/bold]")
@@ -101,10 +141,12 @@ def test_example(example: dict) -> None:
             console.print("[green]✓[/green] Compilation successful")
             display_code(compiled, "[green]Compiled Python[/green]")
         except Exception as e:
+            if track_failures:
+                result["compilation_failed"] = True
             console.print("[red]✗[/red] Compilation failed")
             console.print("[red]Error:[/red]", str(e))
             console.print("[dim]" + "\n".join(traceback.format_exc().split("\n")[1:]) + "[/dim]")
-            return
+            return result if track_failures else None
         
         # Decompilation test
         try:
@@ -112,10 +154,12 @@ def test_example(example: dict) -> None:
             console.print("[green]✓[/green] Decompilation successful")
             display_code(decompiled, "[green]Decompiled Declo[/green]")
         except Exception as e:
+            if track_failures:
+                result["decompilation_failed"] = True
             console.print("[red]✗[/red] Decompilation failed")
             console.print("[red]Error:[/red]", str(e))
             console.print("[dim]" + "\n".join(traceback.format_exc().split("\n")[1:]) + "[/dim]")
-            return
+            return result if track_failures else None
         
         # Roundtrip test
         try:
@@ -123,6 +167,8 @@ def test_example(example: dict) -> None:
             if roundtrip.strip() == example["declo"].strip():
                 console.print("[green]✓[/green] Roundtrip successful")
             else:
+                if track_failures:
+                    result["roundtrip_failed"] = True
                 console.print("[red]✗[/red] Roundtrip produced different output")
                 from rich.text import Text
                 diff = Text()
@@ -133,16 +179,24 @@ def test_example(example: dict) -> None:
                         diff.append(f"Got:      {line2}\n", style="red")
                 console.print(Panel(diff, title="[yellow]Differences[/yellow]"))
         except Exception as e:
+            if track_failures:
+                result["roundtrip_failed"] = True
             console.print("[red]✗[/red] Roundtrip failed")
             console.print("[red]Error:[/red]", str(e))
             console.print("[dim]" + "\n".join(traceback.format_exc().split("\n")[1:]) + "[/dim]")
     
     except Exception as e:
+        if track_failures:
+            result["compilation_failed"] = True
+            result["decompilation_failed"] = True
+            result["roundtrip_failed"] = True
         console.print("[red]✗[/red] Unexpected error during testing")
         console.print("[red]Error:[/red]", str(e))
         console.print("[dim]" + "\n".join(traceback.format_exc().split("\n")[1:]) + "[/dim]")
         console.print("\n[bold red]Debug Information:[/bold red]")
         console.print(Panel(inspect_ast(example["declo"]), title="[red]Last Valid AST[/red]"))
+    
+    return result if track_failures else None
 
 @app.command(name="test-all")
 def test_all():
