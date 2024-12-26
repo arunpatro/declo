@@ -48,13 +48,13 @@ def compile_file(input_file: str, output_file: str = None):
         # If no output file is specified, just print to stdout
         print(compiled_code)
 
-def decompile_file(input_file: str, output_file: str = None, dry: bool = False):
+def decompile_file(input_file: str, output_file: str = None, diff: bool = False):
     """
     Read a Python file, compile it to Declo, and optionally write to an output file.
 
     Usage:
       declopy decompile_file path/to/input.py --output_file=path/to/output.declo
-      declopy decompile_file path/to/input.py --dry  # Show colored diff without saving
+      declopy decompile_file path/to/input.py --diff  # Show colored diff without saving
     """
     _check_python_file_extension(input_file)
 
@@ -67,7 +67,7 @@ def decompile_file(input_file: str, output_file: str = None, dry: bool = False):
     
     decompiled_code = compile_python_to_declo(code)
 
-    if dry:
+    if diff:
         # Show colored diff between original and decompiled code
         print(show_diff(code, decompiled_code))
     elif output_file:
