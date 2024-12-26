@@ -34,3 +34,4 @@ env/
 .DS_Store
 
 uv.lock
+poetry.lock

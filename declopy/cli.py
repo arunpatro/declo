@@ -65,6 +65,6 @@ def main():
     Entrypoint for the declopy command line interface.
     """
     fire.Fire({
-        'compile_file': compile_file,
-        'run_file': run_file,
+        'compile': compile_file,
+        'run': run_file,
     })
