@@ -75,6 +75,35 @@ class FilterMapTransformer(BaseTransformer):
             )
         return node
 
+class IdentityMapOptimizer(BaseTransformer):
+    """Removes unnecessary identity mappings like .map(x => x)."""
+    def visit_Call(self, node: ast.Call) -> Any:
+        # First visit children
+        node = self.generic_visit(node)
+        
+        # Check if this is a map call
+        if (isinstance(node.func, ast.Attribute) and 
+            node.func.attr == 'map' and 
+            len(node.args) == 1):
+            
+            # Get the arrow function
+            arrow_call = node.args[0]
+            if (isinstance(arrow_call, ast.Call) and 
+                isinstance(arrow_call.func, ast.Name) and 
+                arrow_call.func.id == '__arrow__' and 
+                len(arrow_call.args) == 2):
+                
+                arg_name = arrow_call.args[0].value
+                body = arrow_call.args[1]
+                
+                # Check if it's an identity function (x => x)
+                if (isinstance(body, ast.Name) and 
+                    body.id == arg_name):
+                    # Return the value being mapped over instead
+                    return node.func.value
+        
+        return node
+
 def compile_python_to_declo(code: str) -> str:
     """
     Convert Python code to Declo syntax.
@@ -83,10 +112,11 @@ def compile_python_to_declo(code: str) -> str:
     - Simple list comprehensions to .map() calls
     - List comprehensions with filters to .filter().map() chains
     - Lambda functions to arrow functions
+    - Optimizes away unnecessary identity mappings (.map(x => x))
     
     Example:
         [x*x for x in nums] -> nums.map(x => x * x)
-        [x for x in nums if x % 2 == 0] -> nums.filter(x => x % 2 == 0).map(x => x)
+        [x for x in nums if x % 2 == 0] -> nums.filter(x => x % 2 == 0)
     """
     try:
         # Parse the code into an AST
@@ -96,6 +126,7 @@ def compile_python_to_declo(code: str) -> str:
         transformers = [
             MapTransformer(),
             FilterMapTransformer(),
+            IdentityMapOptimizer(),
         ]
         
         for transformer in transformers:
