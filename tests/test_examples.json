@@ -38,7 +38,7 @@
         {
             "title": "Complex Chain - Filter and Map",
             "declo": "nums = [1, 2, 3, 4, 5]\nresult = nums.filter(x => x > 2).map(x => x * x).filter(x => x < 20)",
-            "python": "nums = [1, 2, 3, 4, 5]\nresult = [x * x for x in nums if x > 2 if (x * x) < 20]"
+            "python": "nums = [1, 2, 3, 4, 5]\nresult = [x * x for x in nums if x > 2 and x * x < 20]"
         },
         {
             "title": "Negative Numbers",
