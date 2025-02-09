@@ -17,5 +17,5 @@ uv pip install -e .
 Run the script in tests 
 | Need to simplify this command
 ```bash
-uv run tests/cli.py tests
+uv run tests/cli.py test
 ```
